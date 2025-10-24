@@ -13,6 +13,13 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Configure Ollama client
+OLLAMA_HOST = os.getenv("OLLAMA_HOST")
+if OLLAMA_HOST:
+    ollama_client = ollama.Client(host=OLLAMA_HOST)
+else:
+    ollama_client = ollama.Client()
+
 app = FastAPI(
     title="Byte in Bottle API",
     description="Powered by bytes. Driven by attitude.",
@@ -65,7 +72,7 @@ async def health_check():
     """Health check endpoint."""
     try:
         # Try to connect to Ollama
-        ollama.list()
+        ollama_client.list()
         return {"status": "healthy", "ollama": "connected"}
     except Exception as e:
         return {"status": "degraded", "ollama": "disconnected", "error": str(e)}
@@ -75,7 +82,7 @@ async def health_check():
 async def list_models():
     """List available Ollama models."""
     try:
-        models = ollama.list()
+        models = ollama_client.list()
         return [
             ModelInfo(
                 name=model.get("name", "unknown"),
@@ -103,7 +110,7 @@ async def chat(request: ChatRequest):
     }
     """
     try:
-        response = ollama.chat(
+        response = ollama_client.chat(
             model=request.model, messages=request.messages, stream=request.stream
         )
 
@@ -125,7 +132,7 @@ async def generate(model: str = "llama3.2", prompt: str = "Hello!"):
     Simple endpoint for text generation without chat context.
     """
     try:
-        response = ollama.generate(model=model, prompt=prompt)
+        response = ollama_client.generate(model=model, prompt=prompt)
         return {
             "model": model,
             "response": response.get("response", ""),

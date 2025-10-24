@@ -14,11 +14,44 @@ FastAPI backend with Ollama integration for AI-powered chat and text generation.
 
 ## Prerequisites
 
+### For Docker (Recommended)
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### For Local Development
+
 - Python 3.11+
 - [uv](https://github.com/astral-sh/uv) - Install with: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 - [Ollama](https://ollama.ai/) - Install and have it running locally
 
 ## Quick Start
+
+### Using Docker Compose (Recommended)
+
+From the project root directory:
+
+```bash
+# Start both backend and Ollama services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build backend
+```
+
+The services will be available at:
+
+- Backend API: <http://localhost:8000>
+- Interactive docs: <http://localhost:8000/docs>
+- Ollama: <http://localhost:11434>
+
+### Local Development Setup
 
 1. **Install dependencies:**
 
@@ -121,7 +154,36 @@ backend/
 - `HOST` - Server host (default: 0.0.0.0)
 - `PORT` - Server port (default: 8000)
 - `ALLOWED_ORIGINS` - CORS allowed origins (comma-separated)
-- `OLLAMA_HOST` - Ollama server URL (optional)
+- `OLLAMA_HOST` - Ollama server URL
+  - Local development: `http://localhost:11434`
+  - Docker Compose: `http://ollama:11434` (automatically configured)
+
+## Docker
+
+### Building the Image
+
+```bash
+# From the backend directory
+docker build -t byte-in-bottle-backend .
+
+# Or from project root
+docker build -t byte-in-bottle-backend ./backend
+```
+
+### Running with Docker
+
+```bash
+# Run the backend container (requires Ollama running separately)
+docker run -d \
+  -p 8000:8000 \
+  -e OLLAMA_HOST=http://host.docker.internal:11434 \
+  --name byte-in-bottle-backend \
+  byte-in-bottle-backend
+```
+
+### Docker Compose
+
+The recommended way is to use the `docker-compose.yml` file in the project root, which orchestrates both the backend and Ollama services.
 
 ## License
 

@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  # Ollama service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: byte-in-bottle-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - byte-in-bottle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Pull and run llama3.2 model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        # Start ollama in the background
+        /bin/ollama serve &
+        # Wait for ollama to be ready
+        sleep 5
+        # Pull the llama3.2 model
+        ollama pull llama3.2
+        # Keep the container running
+        wait
+
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: byte-in-bottle-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - OLLAMA_HOST=http://ollama:11434
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+    volumes:
+      - ./backend/src:/app/src
+    networks:
+      - byte-in-bottle-network
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  byte-in-bottle-network:
+    driver: bridge
+
+volumes:
+  ollama_data:
+    driver: local
