@@ -75,53 +75,11 @@ async def health_check():
         ollama_client.list()
         return {"status": "healthy", "ollama": "connected"}
     except Exception as e:
-        return {"status": "degraded", "ollama": "disconnected", "error": str(e)}
-
-
-@app.get("/models", response_model=List[ModelInfo])
-async def list_models():
-    """List available Ollama models."""
-    try:
-        models = ollama_client.list()
-        return [
-            ModelInfo(
-                name=model.get("name", "unknown"),
-                size=model.get("size"),
-                digest=model.get("digest"),
-                modified_at=model.get("modified_at"),
-            )
-            for model in models.get("models", [])
-        ]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to list models: {str(e)}")
-
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
-    """
-    Chat with an Ollama model.
-
-    Example request:
-    {
-        "model": "llama3.2",
-        "messages": [
-            {"role": "user", "content": "Hello!"}
-        ]
-    }
-    """
-    try:
-        response = ollama_client.chat(
-            model=request.model, messages=request.messages, stream=request.stream
-        )
-
-        return ChatResponse(
-            message=response.get("message", {}),
-            model=response.get("model", request.model),
-            created_at=response.get("created_at", ""),
-            done=response.get("done", True),
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+        return {
+            "status": "degraded",
+            "ollama": "disconnected",
+            "error": str(e)
+        }
 
 
 @app.post("/generate")
@@ -140,7 +98,8 @@ async def generate(model: str = "llama3.2", prompt: str = "Hello!"):
             "done": response.get("done", True),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Generation failed: {str(e)}")
 
 
 if __name__ == "__main__":
