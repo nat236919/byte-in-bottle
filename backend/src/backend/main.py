@@ -1,0 +1,147 @@
+"""
+FastAPI application with Ollama integration for byte-in-bottle.
+"""
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import ollama
+from typing import Optional, List
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+app = FastAPI(
+    title="Byte in Bottle API",
+    description="Powered by bytes. Driven by attitude.",
+    version="0.1.0",
+)
+
+# CORS middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("ALLOWED_ORIGINS", "*").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Pydantic models
+class ChatRequest(BaseModel):
+    model: str = "llama3.2"
+    messages: List[dict]
+    stream: bool = False
+
+
+class ChatResponse(BaseModel):
+    message: dict
+    model: str
+    created_at: str
+    done: bool
+
+
+class ModelInfo(BaseModel):
+    name: str
+    size: Optional[int] = None
+    digest: Optional[str] = None
+    modified_at: Optional[str] = None
+
+
+@app.get("/")
+async def root():
+    """Root endpoint."""
+    return {
+        "message": "Welcome to Byte in Bottle API",
+        "tagline": "Powered by bytes. Driven by attitude.",
+        "docs": "/docs",
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    try:
+        # Try to connect to Ollama
+        ollama.list()
+        return {"status": "healthy", "ollama": "connected"}
+    except Exception as e:
+        return {"status": "degraded", "ollama": "disconnected", "error": str(e)}
+
+
+@app.get("/models", response_model=List[ModelInfo])
+async def list_models():
+    """List available Ollama models."""
+    try:
+        models = ollama.list()
+        return [
+            ModelInfo(
+                name=model.get("name", "unknown"),
+                size=model.get("size"),
+                digest=model.get("digest"),
+                modified_at=model.get("modified_at"),
+            )
+            for model in models.get("models", [])
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to list models: {str(e)}")
+
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    """
+    Chat with an Ollama model.
+
+    Example request:
+    {
+        "model": "llama3.2",
+        "messages": [
+            {"role": "user", "content": "Hello!"}
+        ]
+    }
+    """
+    try:
+        response = ollama.chat(
+            model=request.model, messages=request.messages, stream=request.stream
+        )
+
+        return ChatResponse(
+            message=response.get("message", {}),
+            model=response.get("model", request.model),
+            created_at=response.get("created_at", ""),
+            done=response.get("done", True),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+
+
+@app.post("/generate")
+async def generate(model: str = "llama3.2", prompt: str = "Hello!"):
+    """
+    Generate text using an Ollama model.
+
+    Simple endpoint for text generation without chat context.
+    """
+    try:
+        response = ollama.generate(model=model, prompt=prompt)
+        return {
+            "model": model,
+            "response": response.get("response", ""),
+            "created_at": response.get("created_at", ""),
+            "done": response.get("done", True),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "backend.main:app",
+        host=os.getenv("HOST", "0.0.0.0"),
+        port=int(os.getenv("PORT", "8000")),
+        reload=True,
+    )
