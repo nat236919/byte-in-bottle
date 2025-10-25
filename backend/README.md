@@ -1,4 +1,4 @@
-# Byte in Bottle - API
+# Byte in Bottle - Backend
 
 > Powered by bytes. Driven by attitude.
 
