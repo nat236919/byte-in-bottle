@@ -1,4 +1,4 @@
-# Byte in Bottle - Backend
+# Byte in Bottle - API
 
 > Powered by bytes. Driven by attitude.
 
@@ -32,17 +32,14 @@ FastAPI backend with Ollama integration for AI-powered chat and text generation.
 From the project root directory:
 
 ```bash
-# Start both backend and Ollama services
+# Start both api and Ollama services
 docker-compose up -d
-
-# View logs
-docker-compose logs -f backend
 
 # Stop services
 docker-compose down
 
 # Rebuild after code changes
-docker-compose up -d --build backend
+docker-compose up -d --build
 ```
 
 The services will be available at:
@@ -77,10 +74,10 @@ The services will be available at:
 
    ```bash
    # Using uv
-   uv run backend
+   uv run api
    
    # Or directly with uvicorn
-   uv run uvicorn backend.main:app --reload
+   uv run uvicorn api.main:app --reload
    ```
 
 5. **Access the API:**
@@ -126,7 +123,7 @@ POST /generate?model=llama3.2&prompt=Hello!
 
 ```bash
 # Run with auto-reload
-uv run uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 
 # Add new dependencies
 uv add <package-name>
@@ -140,7 +137,7 @@ uv sync
 ```raw
 backend/
 ├── src/
-│   └── backend/
+│   └── api/
 │       ├── __init__.py
 │       └── main.py          # FastAPI application
 ├── .env.example             # Environment variables template
@@ -163,27 +160,27 @@ backend/
 ### Building the Image
 
 ```bash
-# From the backend directory
-docker build -t byte-in-bottle-backend .
+# From the api directory
+docker build -t byte-in-bottle-api .
 
 # Or from project root
-docker build -t byte-in-bottle-backend ./backend
+docker build -t byte-in-bottle-api ./api
 ```
 
 ### Running with Docker
 
 ```bash
-# Run the backend container (requires Ollama running separately)
+# Run the api container (requires Ollama running separately)
 docker run -d \
   -p 8000:8000 \
   -e OLLAMA_HOST=http://host.docker.internal:11434 \
-  --name byte-in-bottle-backend \
-  byte-in-bottle-backend
+  --name byte-in-bottle-api \
+  byte-in-bottle-api
 ```
 
 ### Docker Compose
 
-The recommended way is to use the `docker-compose.yml` file in the project root, which orchestrates both the backend and Ollama services.
+The recommended way is to use the `docker-compose.yml` file in the project root, which orchestrates both the api and Ollama services.
 
 ## License
 

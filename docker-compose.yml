@@ -2,9 +2,9 @@ version: "3.8"
 
 services:
   # Ollama service
-  ollama:
+  backend-ollama:
     image: ollama/ollama:latest
-    container_name: byte-in-bottle-ollama
+    container_name: byte-in-bottle-backend-ollama
     ports:
       - "11434:11434"
     volumes:
@@ -31,25 +31,25 @@ services:
         # Keep the container running
         wait
 
-  # Backend service
-  backend:
+  # Backend API service
+  backend-api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: byte-in-bottle-backend
+    container_name: byte-in-bottle-backend-api
     ports:
       - "8000:8000"
     environment:
       - HOST=0.0.0.0
       - PORT=8000
-      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_HOST=http://backend-ollama:11434
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
     volumes:
       - ./backend/src:/app/src
     networks:
       - byte-in-bottle-network
     depends_on:
-      ollama:
+      backend-ollama:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:

@@ -1,4 +1,4 @@
-from backend.main import app
+from api.main import app
 
 __all__ = ["app"]
 
@@ -12,7 +12,7 @@ def main() -> None:
     load_dotenv()
 
     uvicorn.run(
-        "backend.main:app",
+        "api.main:app",
         host=os.getenv("HOST", "0.0.0.0"),
         port=int(os.getenv("PORT", "8000")),
         reload=True,
