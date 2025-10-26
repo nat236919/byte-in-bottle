@@ -1,187 +1,55 @@
-# Byte in Bottle - Backend
+# Backend
 
-> Powered by bytes. Driven by attitude.
-
-FastAPI backend with Ollama integration for AI-powered chat and text generation.
-
-## Features
-
-- 🚀 **FastAPI** - Modern, fast web framework for building APIs
-- 🤖 **Ollama Integration** - Local LLM support with Ollama
-- ⚡ **UV Package Manager** - Lightning-fast Python package management by Astral
-- 🔄 **CORS Enabled** - Ready for frontend integration
-- 📝 **Auto-generated Docs** - Interactive API documentation with Swagger UI
-
-## Prerequisites
-
-### For Docker (Recommended)
-
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-
-### For Local Development
-
-- Python 3.11+
-- [uv](https://github.com/astral-sh/uv) - Install with: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- [Ollama](https://ollama.ai/) - Install and have it running locally
+FastAPI backend for Byte in Bottle.
 
 ## Quick Start
 
-### Using Docker Compose (Recommended)
+### Option 1: Using Docker Compose (Recommended)
 
-From the project root directory:
+Run the entire stack including Ollama:
 
 ```bash
-# Start both api and Ollama services
+# From the project root directory
 docker-compose up -d
-
-# Stop services
-docker-compose down
-
-# Rebuild after code changes
-docker-compose up -d --build
 ```
 
-The services will be available at:
+This will:
 
-- Backend API: <http://localhost:8000>
-- Interactive docs: <http://localhost:8000/docs>
-- Ollama: <http://localhost:11434>
+- Start Ollama service on port 11434
+- Pull the llama3.2 model automatically
+- Start the FastAPI backend on port 8000
 
-### Local Development Setup
+### Option 2: Local Development
 
-1. **Install dependencies:**
-
-   ```bash
-   uv sync
-   ```
-
-2. **Set up environment variables:**
-
-   ```bash
-   cp .env.example .env
-   # Edit .env as needed
-   ```
-
-3. **Ensure Ollama is running:**
-
-   ```bash
-   # Pull a model (if you haven't already)
-   ollama pull llama3.2
-   ```
-
-4. **Run the server:**
-
-   ```bash
-   # Using uv
-   uv run api
-   
-   # Or directly with uvicorn
-   uv run uvicorn api.main:app --reload
-   ```
-
-5. **Access the API:**
-   - API: <http://localhost:8000>
-   - Interactive docs: <http://localhost:8000/docs>
-   - ReDoc: <http://localhost:8000/redoc>
-
-## API Endpoints
-
-### Health Check
+If you want to run the backend locally, you need Ollama running first:
 
 ```bash
-GET /health
-```
+# 1. Install and start Ollama (if not already running)
+# Download from https://ollama.ai or use brew:
+# brew install ollama
 
-### List Models
+# 2. Start Ollama service
+ollama serve
 
-```bash
-GET /models
-```
+# 3. Pull the model (in a new terminal)
+ollama pull llama3.2
 
-### Chat Completion
+# 4. Set environment variable (optional, defaults to localhost)
+export OLLAMA_HOST=http://localhost:11434
 
-```bash
-POST /chat
-Content-Type: application/json
-
-{
-  "model": "llama3.2",
-  "messages": [
-    {"role": "user", "content": "Hello!"}
-  ]
-}
-```
-
-### Text Generation
-
-```bash
-POST /generate?model=llama3.2&prompt=Hello!
-```
-
-## Development
-
-```bash
-# Run with auto-reload
-uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
-
-# Add new dependencies
-uv add <package-name>
-
-# Update dependencies
+# 5. Install dependencies
 uv sync
+
+# 6. Run development server
+cd src && uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## Project Structure
+## Stack
 
-```raw
-backend/
-├── src/
-│   └── api/
-│       ├── __init__.py
-│       └── main.py          # FastAPI application
-├── .env.example             # Environment variables template
-├── .gitignore
-├── pyproject.toml           # Project configuration
-└── README.md
-```
+- **FastAPI** - Web framework
+- **Ollama** - LLM integration
+- **uvicorn** - ASGI server
 
-## Environment Variables
+## API
 
-- `HOST` - Server host (default: 0.0.0.0)
-- `PORT` - Server port (default: 8000)
-- `ALLOWED_ORIGINS` - CORS allowed origins (comma-separated)
-- `OLLAMA_HOST` - Ollama server URL
-  - Local development: `http://localhost:11434`
-  - Docker Compose: `http://ollama:11434` (automatically configured)
-
-## Docker
-
-### Building the Image
-
-```bash
-# From the api directory
-docker build -t byte-in-bottle-api .
-
-# Or from project root
-docker build -t byte-in-bottle-api ./api
-```
-
-### Running with Docker
-
-```bash
-# Run the api container (requires Ollama running separately)
-docker run -d \
-  -p 8000:8000 \
-  -e OLLAMA_HOST=http://host.docker.internal:11434 \
-  --name byte-in-bottle-api \
-  byte-in-bottle-api
-```
-
-### Docker Compose
-
-The recommended way is to use the `docker-compose.yml` file in the project root, which orchestrates both the api and Ollama services.
-
-## License
-
-See LICENSE in the root directory.
+Swagger docs: `http://localhost:8000/docs`
