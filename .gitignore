@@ -42,3 +42,11 @@ Thumbs.db
 
 # uv
 uv.lock
+
+# Node.js, Nuxt.js
+node_modules
+.nuxt
+.output
+.env
+dist
+*.log
