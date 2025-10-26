@@ -42,3 +42,7 @@ class CoreService:
             ValueError: If the specified model is not available.
         """
         return self.ollama_client.generate(model=model, prompt=prompt)
+
+
+# Singleton instance
+core_service = CoreService()

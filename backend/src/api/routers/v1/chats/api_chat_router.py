@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from api.models.chat_model import GenerateRequest, GenerateResponse
-from api.services import CORE_SERVICE
+from api.services.core_service import core_service
 
 
 api_chat_router = APIRouter(
@@ -26,7 +26,7 @@ async def generate(request: GenerateRequest) -> GenerateResponse:
         HTTPException: If generation fails.
     """
     try:
-        response = CORE_SERVICE.generate_text(
+        response = core_service.generate_text(
             model=request.model, prompt=request.prompt
         )
         return GenerateResponse(

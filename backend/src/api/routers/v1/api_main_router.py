@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from api.models.generic_model import HealthCheckResponse, RootResponse
-from api.services import CORE_SERVICE
+from api.services.core_service import core_service
 from api.routers.v1.chats.api_chat_router import api_chat_router
 
 
@@ -23,7 +23,7 @@ async def root() -> RootResponse:
 async def health_check() -> HealthCheckResponse:
     """Health check v1 endpoint."""
     try:
-        available_models = CORE_SERVICE.get_ollama_models()
+        available_models = core_service.get_ollama_models()
         return HealthCheckResponse(
             status='healthy',
             ollama='connected',
