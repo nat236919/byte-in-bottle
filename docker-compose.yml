@@ -59,6 +59,27 @@ services:
       retries: 3
       start_period: 40s
 
+  # Frontend Nuxt 3 service
+  frontend-ui:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: byte-in-bottle-frontend-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - NUXT_PUBLIC_API_BASE=http://localhost:8000
+      - HOST=0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.nuxt
+    networks:
+      - byte-in-bottle-network
+    depends_on:
+      - backend-api-v1
+    restart: unless-stopped
+
 networks:
   byte-in-bottle-network:
     driver: bridge
