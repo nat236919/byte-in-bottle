@@ -26,7 +26,7 @@ async def generate(request: GenerateRequest) -> GenerateResponse:
         HTTPException: If generation fails.
     """
     try:
-        response = core_service.generate_text(
+        response = await core_service.generate_text(
             model=request.model, prompt=request.prompt
         )
         return GenerateResponse(

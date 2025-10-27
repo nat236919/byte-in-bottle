@@ -23,7 +23,7 @@ async def root() -> RootResponse:
 async def health_check() -> HealthCheckResponse:
     """Health check v1 endpoint."""
     try:
-        available_models = core_service.get_ollama_models()
+        available_models = await core_service.get_ollama_models()
         return HealthCheckResponse(
             status='healthy',
             ollama='connected',
