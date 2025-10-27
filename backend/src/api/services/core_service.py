@@ -40,12 +40,18 @@ class CoreService:
         res = await self.async_ollama_client.list()
         return res.models
 
-    async def generate_text(self, model: str, prompt: str) -> dict:
+    async def generate_text(
+        self, model: str,
+        prompt: str,
+        system_prompt: str = ''
+    ) -> dict:
         """Generate text using a specified Ollama model.
 
         Args:
             model (str): The Ollama model to use.
             prompt (str): The prompt text.
+            system_prompt (str): The system prompt to guide the model. 
+                Defaults to ''.
 
         Returns:
             dict: The generated text response.
@@ -53,6 +59,8 @@ class CoreService:
         Raises:
             ValueError: If the specified model is not available.
         """
+        if system_prompt:
+            prompt = f"{system_prompt}:\n\n{prompt}"
         return await self.async_ollama_client.generate(
             model=model, prompt=prompt
         )

@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 
 
-class GenerateRequest(BaseModel):
+class AskRequest(BaseModel):
     model: str = 'llama3.2'
     prompt: str = 'hello world'
 
 
-class GenerateResponse(BaseModel):
+class AskResponse(BaseModel):
     model: str
     response: str
     created_at: str
