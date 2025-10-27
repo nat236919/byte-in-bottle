@@ -1,6 +1,24 @@
 version: "3.8"
 
 services:
+  # Redis service for caching and rate limiting
+  backend-redis:
+    image: redis:7-alpine
+    container_name: byte-in-bottle-backend-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - byte-in-bottle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
   # Ollama service
   backend-ollama:
     image: ollama/ollama:latest
@@ -43,6 +61,10 @@ services:
       - HOST=0.0.0.0
       - PORT=8000
       - OLLAMA_HOST=http://backend-ollama:11434
+      - REDIS_URL=redis://backend-redis:6379/0
+      - CACHE_TTL=3600
+      - RATE_LIMIT_MAX=10
+      - RATE_LIMIT_WINDOW=60
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
     volumes:
       - ./backend/src:/app/src
@@ -50,6 +72,8 @@ services:
       - byte-in-bottle-network
     depends_on:
       backend-ollama:
+        condition: service_healthy
+      backend-redis:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
@@ -86,4 +110,6 @@ networks:
 
 volumes:
   ollama_data:
+    driver: local
+  redis_data:
     driver: local

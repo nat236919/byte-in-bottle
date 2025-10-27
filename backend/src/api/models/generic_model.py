@@ -10,5 +10,6 @@ class RootResponse(BaseModel):
 class HealthCheckResponse(BaseModel):
     status: str
     ollama: str
+    redis: str
     available_models: Optional[list] = []
     error: Optional[str] = None
