@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class GenerateRequest(BaseModel):
     model: str = 'llama3.2'
-    prompt: str
+    prompt: str = 'hello world'
 
 
 class GenerateResponse(BaseModel):
