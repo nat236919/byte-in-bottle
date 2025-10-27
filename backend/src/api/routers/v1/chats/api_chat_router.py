@@ -20,7 +20,12 @@ async def ask(
 
     Args:
         request (AskRequest): The request body containing model
-            and prompt.
+            and prompt. Available modes are:
+            - concise
+            - professional
+            - sarcastic
+            - creative
+            - friendly
         req (Request): FastAPI request object for client info.
 
     Returns:
@@ -45,7 +50,7 @@ async def ask(
 
     # Check cache for existing response
     cached_response = await cache_service.get_cached_response(
-        request.model, request.prompt
+        request.model, request.prompt, request.mode
     )
     if cached_response:
         return AskResponse(
@@ -53,23 +58,20 @@ async def ask(
             response=cached_response.get('response', ''),
             created_at=cached_response.get('created_at', ''),
             done=cached_response.get('done', True),
+            mode=request.mode,
         )
 
     # Increment rate limit counter
     await cache_service.increment_rate_limit(client_ip)
 
-    # Add guided prompt to only answer the question directly
-    # without additional context
-    guided_prompt = (
-        "Please provide a concise answer to the following question without "
-        "any additional explanations or context"
-    )
+    # Get the system prompt based on the mode
+    system_prompt = core_service.get_system_prompt(request.mode)
 
     try:
         response = await core_service.generate_text(
             model=request.model,
             prompt=request.prompt,
-            system_prompt=guided_prompt
+            system_prompt=system_prompt
         )
 
         # Cache the response for future requests
@@ -79,7 +81,7 @@ async def ask(
             'done': response.get('done', True),
         }
         await cache_service.cache_response(
-            request.model, request.prompt, response_data
+            request.model, request.prompt, response_data, request.mode
         )
 
         return AskResponse(
@@ -87,6 +89,7 @@ async def ask(
             response=response.get('response', ''),
             created_at=response.get('created_at', ''),
             done=response.get('done', True),
+            mode=request.mode,
         )
 
     except Exception as e:

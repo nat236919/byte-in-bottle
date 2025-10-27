@@ -3,6 +3,41 @@ import os
 import ollama
 
 
+# System prompts for different response modes
+MODE_PROMPTS = {
+    'concise': (
+        'Please provide a concise answer to the following question '
+        'without any additional explanations or context. Be brief and '
+        'to the point.'
+        'Do not ask back questions.'
+    ),
+    'professional': (
+        'Please provide a professional, well-structured answer to the '
+        'following question. Use formal language, proper terminology, '
+        'and maintain a business-appropriate tone.'
+        'Do not ask back questions.'
+    ),
+    'sarcastic': (
+        'Please answer the following question with a sarcastic and witty '
+        'tone. Be clever, use humor, and don\'t take things too seriously, '
+        'but still provide a helpful answer.'
+        'Do not ask back questions.'
+    ),
+    'creative': (
+        'Please provide a creative and imaginative answer to the following '
+        'question. Feel free to use metaphors, analogies, and think outside '
+        'the box while still being informative.'
+        'Do not ask back questions.'
+    ),
+    'friendly': (
+        'Please provide a friendly, casual answer to the following question. '
+        'Use a warm, conversational tone as if talking to a friend. '
+        'Be approachable and personable.'
+        'Do not ask back questions.'
+    ),
+}
+
+
 class CoreService:
 
     def __init__(self):
@@ -40,6 +75,18 @@ class CoreService:
         res = await self.async_ollama_client.list()
         return res.models
 
+    def get_system_prompt(self, mode: str = 'concise') -> str:
+        """Get the system prompt for a given mode.
+
+        Args:
+            mode (str): The response mode (concise, professional, etc.).
+                Defaults to 'concise'.
+
+        Returns:
+            str: The system prompt for the specified mode.
+        """
+        return MODE_PROMPTS.get(mode, MODE_PROMPTS['concise'])
+
     async def generate_text(
         self, model: str,
         prompt: str,
@@ -50,7 +97,7 @@ class CoreService:
         Args:
             model (str): The Ollama model to use.
             prompt (str): The prompt text.
-            system_prompt (str): The system prompt to guide the model. 
+            system_prompt (str): The system prompt to guide the model.
                 Defaults to ''.
 
         Returns:

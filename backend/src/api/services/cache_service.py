@@ -42,34 +42,38 @@ class CacheService:
             os.getenv('RATE_LIMIT_MAX', '10')
         )  # 10 requests
 
-    def _generate_cache_key(self, model: str, prompt: str) -> str:
+    def _generate_cache_key(
+        self, model: str, prompt: str, mode: str = 'concise'
+    ) -> str:
         """Generate a cache key for LLM responses.
 
         Args:
             model (str): The model name
             prompt (str): The prompt text
+            mode (str): The response mode (concise, professional, etc.)
 
         Returns:
-            str: Cache key in format 'llm:{model}:{hash}'
+            str: Cache key in format 'llm:{model}:{mode}:{hash}'
         """
         # Use SHA256 hash of prompt for consistent key generation
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()[:16]
-        return f'llm:{model}:{prompt_hash}'
+        return f'llm:{model}:{mode}:{prompt_hash}'
 
     async def get_cached_response(
-        self, model: str, prompt: str
+        self, model: str, prompt: str, mode: str = 'concise'
     ) -> Optional[dict]:
         """Get cached LLM response if available.
 
         Args:
             model (str): The model name
             prompt (str): The prompt text
+            mode (str): The response mode (concise, professional, etc.)
 
         Returns:
             Optional[dict]: Cached response dict or None if not found
         """
         try:
-            cache_key = self._generate_cache_key(model, prompt)
+            cache_key = self._generate_cache_key(model, prompt, mode)
             cached_data = await self.redis_client.get(cache_key)
             if cached_data:
                 return json.loads(cached_data)
@@ -83,6 +87,7 @@ class CacheService:
         model: str,
         prompt: str,
         response: dict,
+        mode: str = 'concise',
         ttl: Optional[int] = None,
     ) -> bool:
         """Cache an LLM response.
@@ -91,13 +96,14 @@ class CacheService:
             model (str): The model name
             prompt (str): The prompt text
             response (dict): The response data to cache
+            mode (str): The response mode (concise, professional, etc.)
             ttl (Optional[int]): Time-to-live in seconds, uses default if None
 
         Returns:
             bool: True if cached successfully, False otherwise
         """
         try:
-            cache_key = self._generate_cache_key(model, prompt)
+            cache_key = self._generate_cache_key(model, prompt, mode)
             ttl = ttl or self.cache_ttl
             await self.redis_client.setex(
                 cache_key, ttl, json.dumps(response)
