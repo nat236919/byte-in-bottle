@@ -67,7 +67,7 @@ services:
       - RATE_LIMIT_WINDOW=60
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
     volumes:
-      - ./backend/src:/app/src
+      - ./backend/api:/app/api
     networks:
       - byte-in-bottle-network
     depends_on:

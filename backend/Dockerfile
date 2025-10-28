@@ -20,10 +20,7 @@ COPY requirements.txt .
 RUN uv pip install --system -r requirements.txt
 
 # Copy application code
-COPY src/ src/
-
-# Set PYTHONPATH to include src directory
-ENV PYTHONPATH=/app/src
+COPY api/ api/
 
 # Expose port
 EXPOSE 8000

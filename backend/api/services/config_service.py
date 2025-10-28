@@ -32,7 +32,7 @@ class ConfigService:
             Path: Absolute path to the pyproject.toml file.
         """
         # Navigate from api/services to backend root
-        return Path(__file__).parent.parent.parent.parent / 'pyproject.toml'
+        return Path(__file__).parent.parent.parent / 'pyproject.toml'
 
     def _load_pyproject(self) -> dict[str, Any]:
         """Load pyproject.toml file.
