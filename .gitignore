@@ -43,6 +43,13 @@ Thumbs.db
 # uv
 uv.lock
 
+# Coverage
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+
 # Node.js, Nuxt.js
 node_modules
 .nuxt
