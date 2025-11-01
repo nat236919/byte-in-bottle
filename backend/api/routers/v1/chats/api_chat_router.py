@@ -32,7 +32,10 @@ async def ask(
         AskResponse: The response containing the answer and metadata.
 
     Raises:
-        HTTPException: If the request fails or rate limit exceeded.
+        HTTPException:
+            400: Invalid mode specified.
+            429: Rate limit exceeded.
+            500: Generation failed.
     """
     # Get client identifier for rate limiting (IP address)
     client_ip = req.client.host if req.client else 'unknown'
@@ -66,6 +69,10 @@ async def ask(
 
     # Get the system prompt based on the mode
     system_prompt = core_service.get_system_prompt(request.mode)
+    if not system_prompt:
+        raise HTTPException(
+            status_code=400, detail='Invalid mode specified.'
+        )
 
     try:
         response = await core_service.generate_text(
