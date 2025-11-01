@@ -6,6 +6,8 @@ from typing import Optional
 
 import redis.asyncio as redis
 
+from api.models.chats.ask_model import AskMode
+
 
 class CacheService:
     """Service for caching and rate limiting using Redis.
@@ -43,7 +45,7 @@ class CacheService:
         )  # 10 requests
 
     def _generate_cache_key(
-        self, model: str, prompt: str, mode: str = 'concise'
+        self, model: str, prompt: str, mode: str = AskMode.CONCISE
     ) -> str:
         """Generate a cache key for LLM responses.
 
@@ -60,7 +62,7 @@ class CacheService:
         return f'llm:{model}:{mode}:{prompt_hash}'
 
     async def get_cached_response(
-        self, model: str, prompt: str, mode: str = 'concise'
+        self, model: str, prompt: str, mode: str = AskMode.CONCISE
     ) -> Optional[dict]:
         """Get cached LLM response if available.
 
@@ -87,7 +89,7 @@ class CacheService:
         model: str,
         prompt: str,
         response: dict,
-        mode: str = 'concise',
+        mode: str = AskMode.CONCISE,
         ttl: Optional[int] = None,
     ) -> bool:
         """Cache an LLM response.

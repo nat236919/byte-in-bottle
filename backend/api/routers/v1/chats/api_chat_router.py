@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 
-from api.models.chat_model import AskRequest, AskResponse
+from api.models.chats.ask_model import AskRequest, AskResponse
 from api.services.core_service import core_service
 from api.services.cache_service import cache_service
 

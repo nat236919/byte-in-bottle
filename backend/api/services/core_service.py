@@ -2,34 +2,36 @@ import os
 
 import ollama
 
+from api.models.chats.ask_model import AskMode
+
 
 # System prompts for different response modes
 MODE_PROMPTS = {
-    'concise': (
+    AskMode.CONCISE: (
         'Please provide a concise answer to the following question '
         'without any additional explanations or context. Be brief and '
         'to the point.'
         'Do not ask back questions.'
     ),
-    'professional': (
+    AskMode.PROFESSIONAL: (
         'Please provide a professional, well-structured answer to the '
         'following question. Use formal language, proper terminology, '
         'and maintain a business-appropriate tone.'
         'Do not ask back questions.'
     ),
-    'sarcastic': (
+    AskMode.SARCASTIC: (
         'Please answer the following question with a sarcastic and witty '
         'tone. Be clever, use humor, and don\'t take things too seriously, '
         'but still provide a helpful answer.'
         'Do not ask back questions.'
     ),
-    'creative': (
+    AskMode.CREATIVE: (
         'Please provide a creative and imaginative answer to the following '
         'question. Feel free to use metaphors, analogies, and think outside '
         'the box while still being informative.'
         'Do not ask back questions.'
     ),
-    'friendly': (
+    AskMode.FRIENDLY: (
         'Please provide a friendly, casual answer to the following question. '
         'Use a warm, conversational tone as if talking to a friend. '
         'Be approachable and personable.'
@@ -75,17 +77,17 @@ class CoreService:
         res = await self.async_ollama_client.list()
         return res.models
 
-    def get_system_prompt(self, mode: str = 'concise') -> str:
+    def get_system_prompt(self, mode: str = AskMode.CONCISE) -> str:
         """Get the system prompt for a given mode.
 
         Args:
             mode (str): The response mode (concise, professional, etc.).
-                Defaults to 'concise'.
+                Defaults to AskMode.CONCISE.
 
         Returns:
             str: The system prompt for the specified mode.
         """
-        return MODE_PROMPTS.get(mode, MODE_PROMPTS['concise'])
+        return MODE_PROMPTS.get(mode, MODE_PROMPTS[AskMode.CONCISE])
 
     async def generate_text(
         self, model: str,
