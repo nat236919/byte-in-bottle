@@ -33,9 +33,14 @@
             <div class="input-container">
                 <textarea v-model="userInput" @keydown.enter.prevent="handleSend"
                     placeholder="Type your message here..." rows="3" :disabled="loading"></textarea>
-                <button @click="handleSend" class="btn" :disabled="isSendDisabled">
-                    {{ loading ? 'Sending...' : 'Send' }}
-                </button>
+                <div class="button-group">
+                    <button @click="handleClear" class="btn btn-secondary" :disabled="loading || messages.length === 0">
+                        Clear
+                    </button>
+                    <button @click="handleSend" class="btn" :disabled="isSendDisabled">
+                        {{ loading ? 'Sending...' : 'Send' }}
+                    </button>
+                </div>
             </div>
 
             <p v-if="error" class="error">{{ error }}</p>
@@ -60,6 +65,12 @@ const scrollToBottom = () => {
             messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
         }
     })
+}
+
+const handleClear = () => {
+    messages.value = []
+    error.value = ''
+    userInput.value = ''
 }
 
 const handleSend = async () => {
@@ -222,6 +233,11 @@ const handleSend = async () => {
     align-items: flex-end;
 }
 
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
 textarea {
     flex: 1;
     padding: 0.75rem;
@@ -262,6 +278,14 @@ textarea:disabled {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #718096;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #4a5568;
 }
 
 .error {
