@@ -97,7 +97,6 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-      - /app/.nuxt
     networks:
       - byte-in-bottle-network
     depends_on:

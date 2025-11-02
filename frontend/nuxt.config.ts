@@ -4,6 +4,14 @@ export default defineNuxtConfig({
   // Development tools
   devtools: { enabled: true },
 
+  // Enable components auto-import
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false
+    }
+  ],
+
   // Runtime config
   runtimeConfig: {
     public: {
