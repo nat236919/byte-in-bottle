@@ -15,7 +15,7 @@
         </div>
 
         <div class="chat-container">
-            <div class="messages" ref="messagesContainer">
+            <div class="messages" ref="messagesContainer" v-show="messages.length > 0">
                 <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
                     <div class="message-content">
                         <strong>{{ message.role === 'user' ? '👤 You' : '🤖 AI' }}:</strong>
