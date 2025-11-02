@@ -5,7 +5,7 @@ Powered by bytes. Driven by attitude.
 ## Project Structure
 
 - **backend/** - FastAPI + Ollama backend for AI-powered features
-- **frontend/** - Frontend application (coming soon)
+- **frontend/** - Nuxt 4 frontend application
 
 ## Backend
 
@@ -13,7 +13,11 @@ FastAPI application with Ollama integration for local LLM chat and text generati
 
 ## Frontend
 
-COMING SOON...
+Modern web application built with:
+
+- **Nuxt 4** - The Intuitive Vue Framework
+- **TypeScript** - Type-safe development
+- **Chat Interface** - Real-time chat with AI models
 
 ### Quick Start (Docker Compose)
 
