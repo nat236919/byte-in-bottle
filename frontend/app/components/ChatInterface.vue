@@ -6,45 +6,39 @@
         <div class="mode-selector">
             <label for="mode-select">Response Mode:</label>
             <select id="mode-select" v-model="selectedMode" :disabled="loading">
-                <option value="concise">💼 Concise - Brief and to the point</option>
-                <option value="professional">👔 Professional - Formal and structured</option>
-                <option value="sarcastic">😏 Sarcastic - Witty and humorous</option>
-                <option value="creative">🎨 Creative - Imaginative and expressive</option>
-                <option value="friendly">😊 Friendly - Casual and warm</option>
+                <option value="concise">💼 Concise</option>
+                <option value="professional">👔 Professional</option>
+                <option value="sarcastic">😏 Sarcastic</option>
+                <option value="creative">🎨 Creative</option>
+                <option value="friendly">😊 Friendly</option>
             </select>
         </div>
 
-        <div class="chat-container">
-            <div class="messages" ref="messagesContainer" v-show="messages.length > 0">
-                <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
-                    <div class="message-content">
-                        <strong>{{ message.role === 'user' ? '👤 You' : '🤖 AI' }}:</strong>
-                        <p>{{ message.content }}</p>
-                    </div>
-                </div>
-                <div v-if="loading" class="message assistant">
-                    <div class="message-content">
-                        <strong>🤖 AI:</strong>
-                        <p class="typing">Thinking...</p>
-                    </div>
-                </div>
+        <div class="messages" ref="messagesContainer" v-if="messages.length">
+            <div v-for="(msg, i) in messages" :key="i" :class="['message', msg.role]">
+                <strong>{{ msg.role === 'user' ? '👤 You' : '🤖 AI' }}:</strong>
+                <p>{{ msg.content }}</p>
             </div>
-
-            <div class="input-container">
-                <textarea v-model="userInput" @keydown.enter.prevent="handleSend"
-                    placeholder="Type your message here..." rows="3" :disabled="loading"></textarea>
-                <div class="button-group">
-                    <button @click="handleClear" class="btn btn-secondary" :disabled="loading || messages.length === 0">
-                        Clear
-                    </button>
-                    <button @click="handleSend" class="btn" :disabled="isSendDisabled">
-                        {{ loading ? 'Sending...' : 'Send' }}
-                    </button>
-                </div>
+            <div v-if="loading" class="message assistant">
+                <strong>🤖 AI:</strong>
+                <p class="typing">Thinking...</p>
             </div>
-
-            <p v-if="error" class="error">{{ error }}</p>
         </div>
+
+        <div class="input-container">
+            <textarea v-model="userInput" @keydown.enter.prevent="handleSend" placeholder="Type your message here..."
+                rows="3" :disabled="loading" />
+            <div class="button-group">
+                <button @click="handleClear" class="btn-secondary" :disabled="loading || !messages.length">
+                    Clear
+                </button>
+                <button @click="handleSend" class="btn" :disabled="loading || !userInput.trim()">
+                    {{ loading ? 'Sending...' : 'Send' }}
+                </button>
+            </div>
+        </div>
+
+        <p v-if="error" class="error">{{ error }}</p>
     </div>
 </template>
 
@@ -55,16 +49,10 @@ const messages = ref<Array<{ role: 'user' | 'assistant'; content: string }>>([])
 const loading = ref(false)
 const error = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
-const selectedMode = ref<'concise' | 'professional' | 'sarcastic' | 'creative' | 'friendly'>('concise')
-
-const isSendDisabled = computed(() => loading.value || !userInput.value.trim())
+const selectedMode = ref('concise')
 
 const scrollToBottom = () => {
-    nextTick(() => {
-        if (messagesContainer.value) {
-            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-        }
-    })
+    nextTick(() => messagesContainer.value?.scrollTo(0, messagesContainer.value.scrollHeight))
 }
 
 const handleClear = () => {
@@ -74,34 +62,24 @@ const handleClear = () => {
 }
 
 const handleSend = async () => {
-    if (!userInput.value.trim() || loading.value) return
-
     const question = userInput.value.trim()
+    if (!question || loading.value) return
+
     userInput.value = ''
     error.value = ''
-
-    // Add user message
     messages.value.push({ role: 'user', content: question })
     scrollToBottom()
 
     loading.value = true
-
     try {
-        const response = await $fetch<{ response: string }>(`${config.public.apiBase}/v1/chats/ask`, {
+        const { response } = await $fetch<{ response: string }>(`${config.public.apiBase}/v1/chats/ask`, {
             method: 'POST',
-            body: {
-                model: 'llama3.2',
-                prompt: question,
-                mode: selectedMode.value
-            }
+            body: { model: 'llama3.2', prompt: question, mode: selectedMode.value }
         })
-
-        // Add AI response
-        messages.value.push({ role: 'assistant', content: response.response })
+        messages.value.push({ role: 'assistant', content: response })
         scrollToBottom()
     } catch (err: any) {
         error.value = `Failed to get response: ${err.message || 'Unknown error'}`
-        console.error('Chat error:', err)
     } finally {
         loading.value = false
     }
@@ -139,7 +117,6 @@ const handleSend = async () => {
 .mode-selector label {
     font-weight: 600;
     color: #333;
-    white-space: nowrap;
 }
 
 .mode-selector select {
@@ -147,25 +124,14 @@ const handleSend = async () => {
     padding: 0.5rem 1rem;
     border: 2px solid #e2e8f0;
     border-radius: 0.5rem;
-    font-size: 1rem;
-    font-family: inherit;
+    font: inherit;
     background: white;
     cursor: pointer;
-    transition: border-color 0.3s;
 }
 
 .mode-selector select:focus {
     outline: none;
     border-color: #667eea;
-}
-
-.mode-selector select:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.chat-container {
-    margin-top: 1rem;
 }
 
 .messages {
@@ -178,8 +144,10 @@ const handleSend = async () => {
 }
 
 .message {
+    padding: 1rem;
     margin-bottom: 1rem;
-    animation: fadeIn 0.3s ease-in;
+    border-radius: 0.5rem;
+    animation: fadeIn 0.3s;
 }
 
 @keyframes fadeIn {
@@ -187,35 +155,25 @@ const handleSend = async () => {
         opacity: 0;
         transform: translateY(10px);
     }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
-.message-content {
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
-
-.message.user .message-content {
+.message.user {
     background: #e6f2ff;
     border-left: 4px solid #667eea;
 }
 
-.message.assistant .message-content {
+.message.assistant {
     background: #f0f9ff;
     border-left: 4px solid #38a169;
 }
 
-.message-content strong {
+.message strong {
     display: block;
     margin-bottom: 0.5rem;
     color: #333;
 }
 
-.message-content p {
+.message p {
     margin: 0;
     color: #4a5568;
     white-space: pre-wrap;
@@ -243,10 +201,8 @@ textarea {
     padding: 0.75rem;
     border: 2px solid #e2e8f0;
     border-radius: 0.5rem;
-    font-size: 1rem;
-    font-family: inherit;
+    font: inherit;
     resize: vertical;
-    transition: border-color 0.3s;
 }
 
 textarea:focus {
@@ -259,29 +215,32 @@ textarea:disabled {
     cursor: not-allowed;
 }
 
-.btn {
-    background: #667eea;
-    color: white;
+button {
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
-    font-size: 1rem;
+    font: inherit;
     cursor: pointer;
-    transition: background 0.3s;
     white-space: nowrap;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn {
+    background: #667eea;
+    color: white;
 }
 
 .btn:hover:not(:disabled) {
     background: #5568d3;
 }
 
-.btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
 .btn-secondary {
     background: #718096;
+    color: white;
 }
 
 .btn-secondary:hover:not(:disabled) {
