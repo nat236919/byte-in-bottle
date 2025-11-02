@@ -56,16 +56,18 @@ services:
       dockerfile: Dockerfile
     container_name: byte-in-bottle-backend-api-v1
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:${PORT:-8000}"
+    env_file:
+      - ./backend/.env
     environment:
-      - HOST=0.0.0.0
-      - PORT=8000
-      - OLLAMA_HOST=http://backend-ollama:11434
-      - REDIS_URL=redis://backend-redis:6379/0
-      - CACHE_TTL=3600
-      - RATE_LIMIT_MAX=10
-      - RATE_LIMIT_WINDOW=60
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      - HOST=${HOST:-0.0.0.0}
+      - PORT=${PORT:-8000}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://backend-ollama:11434}
+      - REDIS_URL=${REDIS_URL:-redis://backend-redis:6379/0}
+      - CACHE_TTL=${CACHE_TTL:-3600}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-10}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-60}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
     volumes:
       - ./backend/api:/app/api
     networks:
@@ -86,13 +88,14 @@ services:
   # Frontend Nuxt 3 service
   frontend-ui:
     build:
-      context: ./frontend
+      context: ./frontend 
       dockerfile: Dockerfile
     container_name: byte-in-bottle-frontend-ui
     ports:
       - "3000:3000"
+    env_file:
+      - ./frontend/.env
     environment:
-      - NUXT_PUBLIC_API_BASE=http://localhost:8000
       - HOST=0.0.0.0
     volumes:
       - ./frontend:/app
