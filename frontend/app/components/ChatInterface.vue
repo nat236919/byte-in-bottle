@@ -3,6 +3,17 @@
         <h2>💬 Chat with AI</h2>
         <p>Ask questions and get responses from Ollama LLM</p>
 
+        <div class="mode-selector">
+            <label for="mode-select">Response Mode:</label>
+            <select id="mode-select" v-model="selectedMode" :disabled="loading">
+                <option value="concise">💼 Concise - Brief and to the point</option>
+                <option value="professional">👔 Professional - Formal and structured</option>
+                <option value="sarcastic">😏 Sarcastic - Witty and humorous</option>
+                <option value="creative">🎨 Creative - Imaginative and expressive</option>
+                <option value="friendly">😊 Friendly - Casual and warm</option>
+            </select>
+        </div>
+
         <div class="chat-container">
             <div class="messages" ref="messagesContainer">
                 <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
@@ -22,7 +33,7 @@
             <div class="input-container">
                 <textarea v-model="userInput" @keydown.enter.prevent="handleSend"
                     placeholder="Type your message here..." rows="3" :disabled="loading"></textarea>
-                <button @click="handleSend" class="btn" :disabled="loading || !userInput.trim()">
+                <button @click="handleSend" class="btn" :disabled="isSendDisabled">
                     {{ loading ? 'Sending...' : 'Send' }}
                 </button>
             </div>
@@ -39,6 +50,9 @@ const messages = ref<Array<{ role: 'user' | 'assistant'; content: string }>>([])
 const loading = ref(false)
 const error = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
+const selectedMode = ref<'concise' | 'professional' | 'sarcastic' | 'creative' | 'friendly'>('concise')
+
+const isSendDisabled = computed(() => loading.value || !userInput.value.trim())
 
 const scrollToBottom = () => {
     nextTick(() => {
@@ -62,13 +76,17 @@ const handleSend = async () => {
     loading.value = true
 
     try {
-        const response = await $fetch<{ answer: string }>(`${config.public.apiBase}/v1/chats/ask`, {
+        const response = await $fetch<{ response: string }>(`${config.public.apiBase}/v1/chats/ask`, {
             method: 'POST',
-            body: { question }
+            body: {
+                model: 'llama3.2',
+                prompt: question,
+                mode: selectedMode.value
+            }
         })
 
         // Add AI response
-        messages.value.push({ role: 'assistant', content: response.answer })
+        messages.value.push({ role: 'assistant', content: response.response })
         scrollToBottom()
     } catch (err: any) {
         error.value = `Failed to get response: ${err.message || 'Unknown error'}`
@@ -95,6 +113,44 @@ const handleSend = async () => {
 .card>p {
     color: #666;
     margin-bottom: 1.5rem;
+}
+
+.mode-selector {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f7fafc;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mode-selector label {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.mode-selector select {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.mode-selector select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.mode-selector select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .chat-container {
