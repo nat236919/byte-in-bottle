@@ -2,6 +2,9 @@
     <div class="nav-card">
         <h3>🚀 Explore</h3>
         <div class="nav-buttons">
+            <NuxtLink to="/ask" class="nav-btn">
+                ❓ Ask AI
+            </NuxtLink>
             <NuxtLink to="/chat" class="nav-btn">
                 💬 Go to Chat
             </NuxtLink>
