@@ -1,6 +1,9 @@
 from fastapi import APIRouter
 
-from api.models.generic_model import HealthCheckResponse, RootResponse
+from api.models.generic_model import (
+    RootResponse, HealthCheckResponse,
+    OllamaHealthCheckStatus, RedditHealthCheckStatus, HealthCheckStatus
+)
 from api.services.core_service import core_service
 from api.services.cache_service import cache_service
 from api.routers.v1.chats.api_chat_router import api_chat_router
@@ -34,21 +37,21 @@ async def health_check() -> HealthCheckResponse:
     try:
         # Check Ollama connection
         available_models = await core_service.get_ollama_models()
-        ollama_status = 'connected'
+        ollama_status = OllamaHealthCheckStatus.CONNECTED
     except Exception:
         available_models = []
-        ollama_status = 'disconnected'
+        ollama_status = OllamaHealthCheckStatus.DISCONNECTED
 
     # Check Redis connection
     redis_healthy = await cache_service.health_check()
-    redis_status = 'connected' if redis_healthy else 'disconnected'
+    redis_status = RedditHealthCheckStatus.CONNECTED if redis_healthy else RedditHealthCheckStatus.DISCONNECTED
 
     # Determine overall status
-    overall_status = 'unhealthy'
-    if ollama_status == 'connected' and redis_status == 'connected':
-        overall_status = 'healthy'
-    elif ollama_status == 'connected' or redis_status == 'connected':
-        overall_status = 'degraded'
+    overall_status = HealthCheckStatus.UNHEALTHY
+    if ollama_status == OllamaHealthCheckStatus.CONNECTED and redis_status == RedditHealthCheckStatus.CONNECTED:
+        overall_status = HealthCheckStatus.HEALTHY
+    elif ollama_status == OllamaHealthCheckStatus.CONNECTED or redis_status == RedditHealthCheckStatus.CONNECTED:
+        overall_status = HealthCheckStatus.DEGRADED
 
     return HealthCheckResponse(
         status=overall_status,

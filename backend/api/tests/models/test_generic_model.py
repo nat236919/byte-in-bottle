@@ -1,7 +1,10 @@
 import pytest
 from pydantic import ValidationError
 
-from api.models.generic_model import RootResponse, HealthCheckResponse
+from api.models.generic_model import (
+    RootResponse, HealthCheckResponse,
+    OllamaHealthCheckStatus, RedditHealthCheckStatus, HealthCheckStatus
+)
 
 
 class TestRootResponse:
@@ -74,3 +77,65 @@ class TestHealthCheckResponse:
         """Test validation of required fields."""
         with pytest.raises(ValidationError):
             HealthCheckResponse()
+
+
+class TestOllamaHealthCheckStatus:
+    """Test suite for OllamaHealthCheckStatus enum."""
+
+    def test_enum_values(self):
+        """Test OllamaHealthCheckStatus values."""
+        assert OllamaHealthCheckStatus.CONNECTED.value == 'connected'
+        assert OllamaHealthCheckStatus.DISCONNECTED.value == 'disconnected'
+
+    def test_enum_comparison(self):
+        """Test OllamaHealthCheckStatus comparison."""
+        assert OllamaHealthCheckStatus.CONNECTED == 'connected'
+        assert OllamaHealthCheckStatus.DISCONNECTED == 'disconnected'
+
+    def test_enum_members(self):
+        """Test OllamaHealthCheckStatus members."""
+        assert len(OllamaHealthCheckStatus) == 2
+        assert all(isinstance(status, OllamaHealthCheckStatus) 
+                  for status in OllamaHealthCheckStatus)
+
+
+class TestRedditHealthCheckStatus:
+    """Test suite for RedditHealthCheckStatus enum."""
+
+    def test_enum_values(self):
+        """Test RedditHealthCheckStatus values."""
+        assert RedditHealthCheckStatus.CONNECTED.value == 'connected'
+        assert RedditHealthCheckStatus.DISCONNECTED.value == 'disconnected'
+
+    def test_enum_comparison(self):
+        """Test RedditHealthCheckStatus comparison."""
+        assert RedditHealthCheckStatus.CONNECTED == 'connected'
+        assert RedditHealthCheckStatus.DISCONNECTED == 'disconnected'
+
+    def test_enum_members(self):
+        """Test RedditHealthCheckStatus members."""
+        assert len(RedditHealthCheckStatus) == 2
+        assert all(isinstance(status, RedditHealthCheckStatus) 
+                  for status in RedditHealthCheckStatus)
+
+
+class TestHealthCheckStatus:
+    """Test suite for HealthCheckStatus enum."""
+
+    def test_enum_values(self):
+        """Test HealthCheckStatus values."""
+        assert HealthCheckStatus.HEALTHY.value == 'healthy'
+        assert HealthCheckStatus.UNHEALTHY.value == 'unhealthy'
+        assert HealthCheckStatus.DEGRADED.value == 'degraded'
+
+    def test_enum_comparison(self):
+        """Test HealthCheckStatus comparison."""
+        assert HealthCheckStatus.HEALTHY == 'healthy'
+        assert HealthCheckStatus.UNHEALTHY == 'unhealthy'
+        assert HealthCheckStatus.DEGRADED == 'degraded'
+
+    def test_enum_members(self):
+        """Test HealthCheckStatus members."""
+        assert len(HealthCheckStatus) == 3
+        assert all(isinstance(status, HealthCheckStatus) 
+                  for status in HealthCheckStatus)
