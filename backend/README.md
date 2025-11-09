@@ -21,7 +21,7 @@ ollama serve
 # In a new terminal
 ollama pull llama3.2
 uv sync
-cd src && uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ## Configuration

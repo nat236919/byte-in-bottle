@@ -90,7 +90,8 @@ class CoreService:
         return MODE_PROMPTS.get(mode, MODE_PROMPTS[AskMode.CONCISE])
 
     async def generate_text(
-        self, model: str,
+        self,
+        model: str,
         prompt: str,
         system_prompt: str = ''
     ) -> dict:
