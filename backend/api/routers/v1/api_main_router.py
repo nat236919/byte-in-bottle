@@ -1,16 +1,15 @@
 from fastapi import APIRouter
 
 from api.models.generic_model import (
-    RootResponse,
     HealthCheckResponse,
+    HealthCheckStatus,
     OllamaHealthCheckStatus,
     RedditHealthCheckStatus,
-    HealthCheckStatus,
+    RootResponse,
 )
-from api.services.core_service import core_service
-from api.services.cache_service import cache_service
 from api.routers.v1.chats.api_chat_router import api_chat_router
-
+from api.services.cache_service import cache_service
+from api.services.core_service import core_service
 
 api_v1_router = APIRouter(
     prefix="/v1",

@@ -3,7 +3,6 @@
 import hashlib
 import json
 import os
-from typing import Optional
 
 import redis.asyncio as redis
 
@@ -63,7 +62,7 @@ class CacheService:
 
     async def get_cached_response(
         self, model: str, prompt: str, mode: str = AskMode.CONCISE
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """Get cached LLM response if available.
 
         Args:
@@ -90,7 +89,7 @@ class CacheService:
         prompt: str,
         response: dict,
         mode: str = AskMode.CONCISE,
-        ttl: Optional[int] = None,
+        ttl: int | None = None,
     ) -> bool:
         """Cache an LLM response.
 

@@ -4,7 +4,6 @@ import ollama
 
 from api.models.chats.ask_model import AskMode
 
-
 # System prompts for different response modes
 MODE_PROMPTS = {
     AskMode.CONCISE: (

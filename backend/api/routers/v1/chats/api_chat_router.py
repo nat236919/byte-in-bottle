@@ -1,9 +1,8 @@
 from fastapi import APIRouter, HTTPException, Request
 
 from api.models.chats.ask_model import AskRequest, AskResponse
-from api.services.core_service import core_service
 from api.services.cache_service import cache_service
-
+from api.services.core_service import core_service
 
 api_chat_router = APIRouter(
     prefix="/chats",

@@ -1,4 +1,3 @@
-from typing import Optional
 from enum import StrEnum
 
 from pydantic import BaseModel
@@ -28,5 +27,5 @@ class HealthCheckResponse(BaseModel):
     status: str
     ollama: str
     redis: str
-    available_models: Optional[list] = []
-    error: Optional[str] = None
+    available_models: list | None = []
+    error: str | None = None

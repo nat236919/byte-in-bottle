@@ -1,12 +1,11 @@
 import os
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers.v1.api_main_router import api_v1_router
 from api.services.config_service import config_service
-
 
 # Load environment variables
 load_dotenv()

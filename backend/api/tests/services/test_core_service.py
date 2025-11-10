@@ -1,8 +1,9 @@
-import pytest
-from unittest.mock import AsyncMock, Mock, patch
 import os
+from unittest.mock import AsyncMock, Mock, patch
 
-from api.services.core_service import CoreService, MODE_PROMPTS, AskMode
+import pytest
+
+from api.services.core_service import MODE_PROMPTS, AskMode, CoreService
 
 
 class TestCoreService:

@@ -2,11 +2,11 @@ import pytest
 from pydantic import ValidationError
 
 from api.models.generic_model import (
-    RootResponse,
     HealthCheckResponse,
+    HealthCheckStatus,
     OllamaHealthCheckStatus,
     RedditHealthCheckStatus,
-    HealthCheckStatus,
+    RootResponse,
 )
 
 
