@@ -41,3 +41,22 @@ testpaths = ["api/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = ["E501"]  # Line too long (Black handles this)
+
+[tool.ruff.lint.isort]
+known-first-party = ["api"]
+
+[tool.ruff.format]
+quote-style = "double"
