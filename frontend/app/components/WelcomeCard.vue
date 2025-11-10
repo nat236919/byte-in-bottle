@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <h2>Welcome to Your Full Stack App!</h2>
-        <p>This is a Nuxt 3 frontend connected to your FastAPI backend.</p>
+        <p>This is a Nuxt 4 frontend connected to your FastAPI backend.</p>
 
         <StackInfo />
         <ApiTester />

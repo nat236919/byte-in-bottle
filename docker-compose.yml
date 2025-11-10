@@ -85,7 +85,7 @@ services:
       retries: 3
       start_period: 40s
 
-  # Frontend Nuxt 3 service
+  # Frontend Nuxt 4 service
   frontend-ui:
     build:
       context: ./frontend 

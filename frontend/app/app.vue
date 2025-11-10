@@ -2,17 +2,17 @@
 useHead({
   title: 'Byte in Bottle',
   meta: [
-    { name: 'description', content: 'A modern chat application built with Nuxt 3 and FastAPI' },
+    { name: 'description', content: 'A modern chat application built with Nuxt 4 and FastAPI' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     { charset: 'utf-8' },
     { name: 'keywords', content: 'chat, AI, Nuxt, FastAPI, Vue' },
     { name: 'author', content: 'Byte in Bottle' },
     { property: 'og:title', content: 'Byte in Bottle' },
-    { property: 'og:description', content: 'A modern chat application built with Nuxt 3 and FastAPI' },
+    { property: 'og:description', content: 'A modern chat application built with Nuxt 4 and FastAPI' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'Byte in Bottle' },
-    { name: 'twitter:description', content: 'A modern chat application built with Nuxt 3 and FastAPI' },
+    { name: 'twitter:description', content: 'A modern chat application built with Nuxt 4 and FastAPI' },
   ],
   htmlAttrs: {
     lang: 'en'

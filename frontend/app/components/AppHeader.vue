@@ -1,7 +1,7 @@
 <template>
     <header class="header">
         <h1>🍾 Byte in Bottle</h1>
-        <p>Nuxt 3 + FastAPI + Ollama</p>
+        <p>Nuxt 4 + FastAPI + Ollama</p>
     </header>
 </template>
 

@@ -2,7 +2,7 @@
     <div class="info">
         <h3>Stack:</h3>
         <ul>
-            <li>✅ Frontend: Nuxt 3 (Vue.js)</li>
+            <li>✅ Frontend: Nuxt 4 (Vue.js)</li>
             <li>✅ Backend: FastAPI (Python)</li>
             <li>✅ LLM: Ollama (llama3.2)</li>
             <li>✅ Docker Compose</li>
