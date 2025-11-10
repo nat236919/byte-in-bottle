@@ -2,8 +2,11 @@ import pytest
 from pydantic import ValidationError
 
 from api.models.generic_model import (
-    RootResponse, HealthCheckResponse,
-    OllamaHealthCheckStatus, RedditHealthCheckStatus, HealthCheckStatus
+    RootResponse,
+    HealthCheckResponse,
+    OllamaHealthCheckStatus,
+    RedditHealthCheckStatus,
+    HealthCheckStatus,
 )
 
 
@@ -12,14 +15,14 @@ class TestRootResponse:
 
     def test_valid_creation_and_serialization(self):
         """Test RootResponse creation and serialization."""
-        response = RootResponse(message='Test message')
-        assert response.message == 'Test message'
-        assert response.model_dump() == {'message': 'Test message'}
+        response = RootResponse(message="Test message")
+        assert response.message == "Test message"
+        assert response.model_dump() == {"message": "Test message"}
 
     def test_edge_cases(self):
         """Test RootResponse edge cases."""
-        assert RootResponse(message='').message == ''
-        with pytest.raises(ValidationError, match='message'):
+        assert RootResponse(message="").message == ""
+        with pytest.raises(ValidationError, match="message"):
             RootResponse()
 
 
@@ -29,22 +32,22 @@ class TestHealthCheckResponse:
     def test_full_data_creation(self):
         """Test HealthCheckResponse with all fields."""
         response = HealthCheckResponse(
-            status='healthy',
-            ollama='connected',
-            redis='connected',
-            available_models=['llama3.2', 'mistral'],
-            error=None
+            status="healthy",
+            ollama="connected",
+            redis="connected",
+            available_models=["llama3.2", "mistral"],
+            error=None,
         )
-        assert response.status == 'healthy'
-        assert response.ollama == 'connected'
-        assert response.redis == 'connected'
-        assert response.available_models == ['llama3.2', 'mistral']
+        assert response.status == "healthy"
+        assert response.ollama == "connected"
+        assert response.redis == "connected"
+        assert response.available_models == ["llama3.2", "mistral"]
         assert response.error is None
 
     def test_minimal_data_with_defaults(self):
         """Test HealthCheckResponse with defaults."""
         response = HealthCheckResponse(
-            status='healthy', ollama='connected', redis='connected'
+            status="healthy", ollama="connected", redis="connected"
         )
         assert response.available_models == []
         assert response.error is None
@@ -52,26 +55,26 @@ class TestHealthCheckResponse:
     def test_error_state(self):
         """Test HealthCheckResponse with error."""
         response = HealthCheckResponse(
-            status='unhealthy',
-            ollama='disconnected',
-            redis='connected',
-            error='Ollama service unavailable'
+            status="unhealthy",
+            ollama="disconnected",
+            redis="connected",
+            error="Ollama service unavailable",
         )
-        assert response.status == 'unhealthy'
-        assert response.error == 'Ollama service unavailable'
+        assert response.status == "unhealthy"
+        assert response.error == "Ollama service unavailable"
 
     def test_serialization(self):
         """Test serialization and deserialization."""
         data = {
-            'status': 'healthy',
-            'ollama': 'connected',
-            'redis': 'connected',
-            'available_models': ['model1'],
+            "status": "healthy",
+            "ollama": "connected",
+            "redis": "connected",
+            "available_models": ["model1"],
         }
         response = HealthCheckResponse(**data)
         serialized = response.model_dump()
-        assert serialized['status'] == 'healthy'
-        assert serialized['available_models'] == ['model1']
+        assert serialized["status"] == "healthy"
+        assert serialized["available_models"] == ["model1"]
 
     def test_validation(self):
         """Test validation of required fields."""
@@ -84,19 +87,21 @@ class TestOllamaHealthCheckStatus:
 
     def test_enum_values(self):
         """Test OllamaHealthCheckStatus values."""
-        assert OllamaHealthCheckStatus.CONNECTED.value == 'connected'
-        assert OllamaHealthCheckStatus.DISCONNECTED.value == 'disconnected'
+        assert OllamaHealthCheckStatus.CONNECTED.value == "connected"
+        assert OllamaHealthCheckStatus.DISCONNECTED.value == "disconnected"
 
     def test_enum_comparison(self):
         """Test OllamaHealthCheckStatus comparison."""
-        assert OllamaHealthCheckStatus.CONNECTED == 'connected'
-        assert OllamaHealthCheckStatus.DISCONNECTED == 'disconnected'
+        assert OllamaHealthCheckStatus.CONNECTED == "connected"
+        assert OllamaHealthCheckStatus.DISCONNECTED == "disconnected"
 
     def test_enum_members(self):
         """Test OllamaHealthCheckStatus members."""
         assert len(OllamaHealthCheckStatus) == 2
-        assert all(isinstance(status, OllamaHealthCheckStatus) 
-                  for status in OllamaHealthCheckStatus)
+        assert all(
+            isinstance(status, OllamaHealthCheckStatus)
+            for status in OllamaHealthCheckStatus
+        )
 
 
 class TestRedditHealthCheckStatus:
@@ -104,19 +109,21 @@ class TestRedditHealthCheckStatus:
 
     def test_enum_values(self):
         """Test RedditHealthCheckStatus values."""
-        assert RedditHealthCheckStatus.CONNECTED.value == 'connected'
-        assert RedditHealthCheckStatus.DISCONNECTED.value == 'disconnected'
+        assert RedditHealthCheckStatus.CONNECTED.value == "connected"
+        assert RedditHealthCheckStatus.DISCONNECTED.value == "disconnected"
 
     def test_enum_comparison(self):
         """Test RedditHealthCheckStatus comparison."""
-        assert RedditHealthCheckStatus.CONNECTED == 'connected'
-        assert RedditHealthCheckStatus.DISCONNECTED == 'disconnected'
+        assert RedditHealthCheckStatus.CONNECTED == "connected"
+        assert RedditHealthCheckStatus.DISCONNECTED == "disconnected"
 
     def test_enum_members(self):
         """Test RedditHealthCheckStatus members."""
         assert len(RedditHealthCheckStatus) == 2
-        assert all(isinstance(status, RedditHealthCheckStatus) 
-                  for status in RedditHealthCheckStatus)
+        assert all(
+            isinstance(status, RedditHealthCheckStatus)
+            for status in RedditHealthCheckStatus
+        )
 
 
 class TestHealthCheckStatus:
@@ -124,18 +131,19 @@ class TestHealthCheckStatus:
 
     def test_enum_values(self):
         """Test HealthCheckStatus values."""
-        assert HealthCheckStatus.HEALTHY.value == 'healthy'
-        assert HealthCheckStatus.UNHEALTHY.value == 'unhealthy'
-        assert HealthCheckStatus.DEGRADED.value == 'degraded'
+        assert HealthCheckStatus.HEALTHY.value == "healthy"
+        assert HealthCheckStatus.UNHEALTHY.value == "unhealthy"
+        assert HealthCheckStatus.DEGRADED.value == "degraded"
 
     def test_enum_comparison(self):
         """Test HealthCheckStatus comparison."""
-        assert HealthCheckStatus.HEALTHY == 'healthy'
-        assert HealthCheckStatus.UNHEALTHY == 'unhealthy'
-        assert HealthCheckStatus.DEGRADED == 'degraded'
+        assert HealthCheckStatus.HEALTHY == "healthy"
+        assert HealthCheckStatus.UNHEALTHY == "unhealthy"
+        assert HealthCheckStatus.DEGRADED == "degraded"
 
     def test_enum_members(self):
         """Test HealthCheckStatus members."""
         assert len(HealthCheckStatus) == 3
-        assert all(isinstance(status, HealthCheckStatus) 
-                  for status in HealthCheckStatus)
+        assert all(
+            isinstance(status, HealthCheckStatus) for status in HealthCheckStatus
+        )

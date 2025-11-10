@@ -1,4 +1,5 @@
 """Cache service for Redis operations."""
+
 import hashlib
 import json
 import os
@@ -19,9 +20,12 @@ class CacheService:
 
     Attributes:
         redis_client: Async Redis client instance
-        cache_ttl: Time-to-live for cached responses in seconds
-        rate_limit_window: Time window for rate limiting in seconds
-        rate_limit_max: Maximum requests allowed per window
+        cache_ttl: Time-to-live for cached responses in seconds.
+            Defaults to 3600 (1 hour).
+        rate_limit_window: Time window for rate limiting in seconds.
+            Defaults to 60.
+        rate_limit_max: Maximum requests allowed per window.
+            Defaults to 10.
     """
 
     def __init__(self):
@@ -30,19 +34,15 @@ class CacheService:
         Connects to Redis using REDIS_URL from environment.
         Falls back to localhost if not specified.
         """
-        redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
         self.redis_client = redis.from_url(
             redis_url,
-            encoding='utf-8',
+            encoding="utf-8",
             decode_responses=True,
         )
-        self.cache_ttl = int(os.getenv('CACHE_TTL', '3600'))  # 1 hour
-        self.rate_limit_window = int(
-            os.getenv('RATE_LIMIT_WINDOW', '60')
-        )  # 60 seconds
-        self.rate_limit_max = int(
-            os.getenv('RATE_LIMIT_MAX', '10')
-        )  # 10 requests
+        self.cache_ttl = int(os.getenv("CACHE_TTL", "3600"))
+        self.rate_limit_window = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
+        self.rate_limit_max = int(os.getenv("RATE_LIMIT_MAX", "10"))
 
     def _generate_cache_key(
         self, model: str, prompt: str, mode: str = AskMode.CONCISE
@@ -59,7 +59,7 @@ class CacheService:
         """
         # Use SHA256 hash of prompt for consistent key generation
         prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()[:16]
-        return f'llm:{model}:{mode}:{prompt_hash}'
+        return f"llm:{model}:{mode}:{prompt_hash}"
 
     async def get_cached_response(
         self, model: str, prompt: str, mode: str = AskMode.CONCISE
@@ -107,9 +107,7 @@ class CacheService:
         try:
             cache_key = self._generate_cache_key(model, prompt, mode)
             ttl = ttl or self.cache_ttl
-            await self.redis_client.setex(
-                cache_key, ttl, json.dumps(response)
-            )
+            await self.redis_client.setex(cache_key, ttl, json.dumps(response))
             return True
         except Exception:
             # If Redis fails, don't break the app - just skip cache
@@ -127,7 +125,7 @@ class CacheService:
                 current_count: Current number of requests in window
         """
         try:
-            key = f'rate_limit:{identifier}'
+            key = f"rate_limit:{identifier}"
             current_count = await self.redis_client.get(key)
 
             if current_count is None:
@@ -152,7 +150,7 @@ class CacheService:
             int: New count after increment
         """
         try:
-            key = f'rate_limit:{identifier}'
+            key = f"rate_limit:{identifier}"
             count = await self.redis_client.incr(key)
 
             # Set expiry on first request
@@ -164,7 +162,7 @@ class CacheService:
             # If Redis fails, return 0
             return 0
 
-    async def clear_cache(self, pattern: str = 'llm:*') -> int:
+    async def clear_cache(self, pattern: str = "llm:*") -> int:
         """Clear cached entries matching pattern.
 
         Args:

@@ -1,4 +1,5 @@
 """Configuration service for loading project metadata."""
+
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -32,7 +33,7 @@ class ConfigService:
             Path: Absolute path to the pyproject.toml file.
         """
         # Navigate from api/services to backend root
-        return Path(__file__).parent.parent.parent / 'pyproject.toml'
+        return Path(__file__).parent.parent.parent / "pyproject.toml"
 
     def _load_pyproject(self) -> dict[str, Any]:
         """Load pyproject.toml file.
@@ -44,7 +45,7 @@ class ConfigService:
             dict[str, Any]: Parsed pyproject.toml data as a dictionary.
         """
         if self._pyproject_data is None:
-            with open(self._pyproject_path, 'rb') as f:
+            with open(self._pyproject_path, "rb") as f:
                 self._pyproject_data = tomllib.load(f)
         return self._pyproject_data
 
@@ -56,7 +57,7 @@ class ConfigService:
                 metadata like name, version, description, etc.
         """
         pyproject = self._load_pyproject()
-        return pyproject.get('project', {})
+        return pyproject.get("project", {})
 
     def get_project_name(self) -> str:
         """Get project name.
@@ -66,7 +67,7 @@ class ConfigService:
                 if not found.
         """
         project_info = self.get_project_info()
-        return project_info.get('name', 'backend')
+        return project_info.get("name", "backend")
 
     def get_project_version(self) -> str:
         """Get project version.
@@ -76,7 +77,7 @@ class ConfigService:
                 if not found.
         """
         project_info = self.get_project_info()
-        return project_info.get('version', '0.1.0')
+        return project_info.get("version", "0.1.0")
 
     def get_project_description(self) -> str:
         """Get project description.
@@ -86,10 +87,7 @@ class ConfigService:
                 'Powered by bytes. Driven by attitude.' if not found.
         """
         project_info = self.get_project_info()
-        return project_info.get(
-            'description',
-            'Powered by bytes. Driven by attitude.'
-        )
+        return project_info.get("description", "Powered by bytes. Driven by attitude.")
 
     def get_api_title(self) -> str:
         """Get API title formatted for FastAPI.
@@ -101,9 +99,9 @@ class ConfigService:
             str: Formatted API title suitable for FastAPI application.
         """
         name = self.get_project_name()
-        if name == 'backend':
-            return 'Byte in Bottle API'
-        return name.replace('backend', 'Byte in Bottle API')
+        if name == "backend":
+            return "Byte in Bottle API"
+        return name.replace("backend", "Byte in Bottle API")
 
 
 # Singleton instance

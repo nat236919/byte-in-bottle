@@ -9,19 +9,19 @@ class RootResponse(BaseModel):
 
 
 class OllamaHealthCheckStatus(StrEnum):
-    CONNECTED = 'connected'
-    DISCONNECTED = 'disconnected'
+    CONNECTED = "connected"
+    DISCONNECTED = "disconnected"
 
 
 class RedditHealthCheckStatus(StrEnum):
-    CONNECTED = 'connected'
-    DISCONNECTED = 'disconnected'
+    CONNECTED = "connected"
+    DISCONNECTED = "disconnected"
 
 
 class HealthCheckStatus(StrEnum):
-    HEALTHY = 'healthy'
-    UNHEALTHY = 'unhealthy'
-    DEGRADED = 'degraded'
+    HEALTHY = "healthy"
+    UNHEALTHY = "unhealthy"
+    DEGRADED = "degraded"
 
 
 class HealthCheckResponse(BaseModel):
