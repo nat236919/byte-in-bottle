@@ -42,6 +42,11 @@ jobs:
               run: |
                   uv sync --dev
 
+            - name: Run Ruff
+              uses: astral-sh/ruff-action@v3
+              with:
+                  src: "./backend"
+
             - name: Run tests with pytest
               run: |
                   uv run pytest --verbose --tb=short
