@@ -5,36 +5,19 @@ import ollama
 from api.models.chats.ask_model import AskMode
 
 # System prompts for different response modes
-MODE_PROMPTS = {
-    AskMode.CONCISE: (
-        "Please provide a concise answer to the following question "
-        "without any additional explanations or context. Be brief and "
-        "to the point."
-        "Do not ask back questions."
-    ),
+MODE_PROMPTS: dict[AskMode, str] = {
+    AskMode.CONCISE: "Be brief and direct. No extra context or follow-ups.",
     AskMode.PROFESSIONAL: (
-        "Please provide a professional, well-structured answer to the "
-        "following question. Use formal language, proper terminology, "
-        "and maintain a business-appropriate tone."
-        "Do not ask back questions."
+        "Use formal language and proper terminology. "
+        "Be thorough yet precise. No follow-ups."
     ),
-    AskMode.SARCASTIC: (
-        "Please answer the following question with a sarcastic and witty "
-        "tone. Be clever, use humor, and don't take things too seriously, "
-        "but still provide a helpful answer."
-        "Do not ask back questions."
-    ),
+    AskMode.SARCASTIC: ("Be witty and sarcastic while staying helpful. No follow-ups."),
     AskMode.CREATIVE: (
-        "Please provide a creative and imaginative answer to the following "
-        "question. Feel free to use metaphors, analogies, and think outside "
-        "the box while still being informative."
-        "Do not ask back questions."
+        "Use metaphors and analogies. "
+        "Think creatively while staying accurate. No follow-ups."
     ),
     AskMode.FRIENDLY: (
-        "Please provide a friendly, casual answer to the following question. "
-        "Use a warm, conversational tone as if talking to a friend. "
-        "Be approachable and personable."
-        "Do not ask back questions."
+        "Be warm and conversational, like talking to a friend. No follow-ups."
     ),
 }
 
